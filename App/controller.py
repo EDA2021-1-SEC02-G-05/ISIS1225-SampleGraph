@@ -111,7 +111,9 @@ def minimumCostPaths(analyzer, initialStation):
     Calcula todos los caminos de costo minimo de initialStation a todas
     las otras estaciones del sistema
     """
-    return model.minimumCostPaths(analyzer, initialStation)
+    k = model.minimumCostPaths(analyzer, initialStation)
+    
+    return k 
 
 
 def hasPath(analyzer, destStation):
@@ -134,3 +136,4 @@ def servedRoutes(analyzer):
     """
     maxvert, maxdeg = model.servedRoutes(analyzer)
     return maxvert, maxdeg
+

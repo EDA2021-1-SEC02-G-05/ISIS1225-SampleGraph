@@ -178,10 +178,12 @@ def minimumCostPaths(analyzer, initialStation):
     Calcula los caminos de costo mínimo desde la estacion initialStation
     a todos los demas vertices del grafo
     """
+
     analyzer['paths'] = djk.Dijkstra(analyzer['connections'], initialStation)
+
+    
+
     return analyzer
-
-
 def hasPath(analyzer, destStation):
     """
     Indica si existe un camino desde la estacion inicial a la estación destino

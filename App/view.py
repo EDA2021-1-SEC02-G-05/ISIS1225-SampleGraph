@@ -31,6 +31,12 @@ import threading
 from App import controller
 from DISClib.ADT import stack
 assert config
+import time
+import datetime
+import tracemalloc
+from DISClib.ADT import map as m
+from DISClib.ADT import list as lt
+
 
 """
 La vista se encarga de la interacción con el usuario.
@@ -44,7 +50,7 @@ operación seleccionada.
 # ___________________________________________________
 
 
-servicefile = 'bus_routes_14000.csv'
+servicefile = 'bus_routes_3000.csv'
 initialStation = None
 
 # ___________________________________________________
@@ -69,21 +75,45 @@ def printMenu():
 
 def optionTwo(cont):
     print("\nCargando información de transporte de singapur ....")
+
+
+    delta_time = -1.0
+    tracemalloc.start()
+    start_time = getTime()
+
     controller.loadServices(cont, servicefile)
     numedges = controller.totalConnections(cont)
     numvertex = controller.totalStops(cont)
     print('Numero de vertices: ' + str(numvertex))
     print('Numero de arcos: ' + str(numedges))
     print('El limite de recursion actual: ' + str(sys.getrecursionlimit()))
+    stop_time = getTime()
+    tracemalloc.stop()
+    delta_time = stop_time - start_time
+    print("Tiempo [ms]: ", f"{delta_time:.3f}")
+   
 
-
+  
 def optionThree(cont):
     print('El número de componentes conectados es: ' +
           str(controller.connectedComponents(cont)))
 
 
 def optionFour(cont, initialStation):
-    controller.minimumCostPaths(cont, initialStation)
+
+    delta_time = -1.0
+    tracemalloc.start()
+    start_time = getTime()
+    
+    j = controller.minimumCostPaths(cont, initialStation)
+ 
+
+    stop_time = getTime()
+    tracemalloc.stop()
+    delta_time = stop_time - start_time
+
+    print("Tiempo [ms]: ", f"{delta_time:.3f}")
+
 
 
 def optionFive(cont, destStation):
@@ -94,16 +124,36 @@ def optionFive(cont, destStation):
 
 
 def optionSix(cont, destStation):
+
+    delta_time = -1.0
+    tracemalloc.start()
+    start_time = getTime()
+    jose = m.newMap()
     path = controller.minimumCostPath(cont, destStation)
     if path is not None:
         pathlen = stack.size(path)
-        print('El camino es de longitud: ' + str(pathlen))
+ 
         while (not stack.isEmpty(path)):
             stop = stack.pop(path)
-            print(stop)
+            if m.contains(jose,stop['vertexB'])== False:
+
+                m.put(jose,stop['vertexB'],1)
+
+        pacho=m.keySet(jose)
+
+        arias=lt.size(pacho)
+
+        print('Numero de vertices: '+str(arias))
+
+        print("El numero de arcos es: ",pathlen)  
     else:
         print('No hay camino')
 
+    stop_time = getTime()
+    tracemalloc.stop()
+    delta_time = stop_time - start_time
+
+    print("Tiempo [ms]: ", f"{delta_time:.3f}")
 
 def optionSeven(cont):
     maxvert, maxdeg = controller.servedRoutes(cont)
@@ -158,3 +208,11 @@ if __name__ == "__main__":
     sys.setrecursionlimit(2 ** 20)
     thread = threading.Thread(target=thread_cycle)
     thread.start()
+
+
+
+def getTime():
+    """
+    devuelve el instante tiempo de procesamiento en milisegundos
+    """
+    return float(time.perf_counter()*1000)
